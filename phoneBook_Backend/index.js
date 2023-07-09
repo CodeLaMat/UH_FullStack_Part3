@@ -3,7 +3,15 @@ const morgan = require("morgan");
 const app = express();
 
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :requestedPerson"
+  )
+);
+
+morgan.token("requestedPerson", (req, res) => {
+  return JSON.stringify(req.RequestedPerson);
+});
 
 app.use((req, res, next) => {
   req.requestTime = new Date();
@@ -48,6 +56,7 @@ app.get("/api/persons/:id", (req, res) => {
   let person = persons.find((person) => person.id === id);
 
   if (person) {
+    req.RequestedPerson = { name: person.name, number: person.number };
     res.json(person);
   } else {
     res.status(404).end();
