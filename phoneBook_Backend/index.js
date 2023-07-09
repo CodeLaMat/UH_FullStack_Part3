@@ -3,6 +3,11 @@ const app = express();
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  req.requestTime = new Date();
+  next();
+});
+
 let persons = [
   {
     id: 1,
@@ -28,6 +33,12 @@ let persons = [
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
+  console.log(req.headers);
+});
+
+app.get("/info", (req, res) => {
+  res.send(`<p>Phonebook has info for ${persons.length} people</p>
+  <p>${req.requestTime}   </p>`);
 });
 
 const PORT = 3001;
